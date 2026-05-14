@@ -15,6 +15,8 @@ def _acl_key(secret_key: str) -> str:
 
 def set_acl(vault_dir: str, password: str, secret_key: str, allowed_users: List[str]) -> None:
     """Set the list of OS users allowed to read *secret_key*."""
+    if not allowed_users:
+        raise ValueError("allowed_users must not be empty; use remove_acl() to lift restrictions.")
     secrets = load_secrets(vault_dir, password)
     if secret_key not in secrets:
         raise KeyError(f"Secret '{secret_key}' does not exist.")
