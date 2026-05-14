@@ -89,3 +89,15 @@ def test_due_reminders_excludes_future_reminders(vault_dir):
     set_reminder(vault_dir, PASSWORD, "API_KEY", days=30)
     due = due_reminders(vault_dir, PASSWORD)
     assert due == []
+
+
+def test_set_reminder_overwrites_existing(vault_dir):
+    """Setting a reminder twice should replace the first with the second."""
+    set_reminder(vault_dir, PASSWORD, "API_KEY", days=5, message="first")
+    set_reminder(vault_dir, PASSWORD, "API_KEY", days=30, message="second")
+    info = get_reminder(vault_dir, PASSWORD, "API_KEY")
+    assert info is not None
+    assert info["message"] == "second"
+    # The new remind_at should be further in the future than 5 days from now
+    from datetime import timedelta
+    assert info["remind_at"] > datetime.now(timezone.utc) + timedelta(days=20)
