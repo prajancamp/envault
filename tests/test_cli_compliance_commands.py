@@ -41,3 +41,15 @@ def test_compliance_password_flag(parser_with_compliance):
 def test_compliance_func_points_to_cmd(parser_with_compliance):
     args = parser_with_compliance.parse_args(["compliance", "/proj"])
     assert args.func is cmd_compliance_report
+
+
+def test_compliance_invalid_format_rejected(parser_with_compliance):
+    """Ensure that unsupported format values are rejected by the parser."""
+    with pytest.raises(SystemExit):
+        parser_with_compliance.parse_args(["compliance", "/proj", "--format", "xml"])
+
+
+def test_compliance_project_path_stored(parser_with_compliance):
+    """Verify the positional project path argument is stored on the namespace."""
+    args = parser_with_compliance.parse_args(["compliance", "/my/project"])
+    assert args.project_path == "/my/project"
